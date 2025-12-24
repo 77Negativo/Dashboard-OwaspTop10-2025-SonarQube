@@ -4,83 +4,15 @@ on:
   push:
     branches:
       - main
-      - develop
-      - staging
+      - develop 
   pull_request:
     branches:
       - main
-      - develop
-  workflow_dispatch:
-    inputs:
-      fail-on-quality-gate:
-        description: 'Falhar se Quality Gate não passar'
-        required: false
-        type: boolean
-        default: false
-
-permissions:
-  contents: read
 
 jobs:
-  sonarqube-analysis:
-    name: 📊 Análise de Código Python
-    uses: 77Negativo/core-action-sec/.github/workflows/sonarqube-analysis.yaml@main
-    with:
-      # Configurações específicas do projeto Dashboard Python
-      project-key: 'dashboard-owasp-top10-2025'
-      project-name: 'Dashboard OWASP Top 10 2025 - SonarQube'
-      sources: '.'
-      exclusions: |
-        **/__pycache__/**,
-        **/*.pyc,
-        **/.pytest_cache/**,
-        **/venv/**,
-        **/env/**,
-        **/.git/**,
-        **/.github/**,
-        **/sonarqube_scans_history/**,
-        **/sonarqube_dashboard.html
-
-      # Configurações de análise
-      fail-on-quality-gate: ${{ github.event.inputs.fail-on-quality-gate || false }}
-      quality-gate-wait: true
-      skip-java-setup: true
-
+  security-scan:
+    uses: 77Negativo/core-action-sec/.github/workflows/simples-scan.yml@main
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-  # Job para mostrar resultados
-  display-results:
-    name: 📋 Exibir Resultados
-    needs: sonarqube-analysis
-    runs-on: k8s-onprem-runners  # ⚠️ PADRÃO OBRIGATÓRIO - NUNCA ALTERAR
-    if: always()
-    steps:
-      - name: 📊 Resumo da Análise
-        run: |
-          echo "### 📊 Resultados da Análise SonarQube" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Projeto**: Dashboard OWASP Top 10 2025" >> $GITHUB_STEP_SUMMARY
-          echo "**Environment**: ${{ needs.sonarqube-analysis.outputs.environment-name }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Quality Gate**: ${{ needs.sonarqube-analysis.outputs.quality-gate-status }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 **[Ver Dashboard Completo](${{ needs.sonarqube-analysis.outputs.project-url }})**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Status visual
-          STATUS="${{ needs.sonarqube-analysis.outputs.quality-gate-status }}"
-          case "$STATUS" in
-            "OK")
-              echo "✅ **Status**: Análise concluída com sucesso! Código dentro dos padrões de qualidade." >> $GITHUB_STEP_SUMMARY
-              ;;
-            "ERROR")
-              echo "❌ **Status**: Quality Gate falhou! Revise os problemas identificados no dashboard." >> $GITHUB_STEP_SUMMARY
-              ;;
-            "WARN")
-              echo "⚠️ **Status**: Análise concluída com avisos. Verifique os detalhes no dashboard." >> $GITHUB_STEP_SUMMARY
-              ;;
-            *)
-              echo "ℹ️ **Status**: $STATUS" >> $GITHUB_STEP_SUMMARY
-              ;;
-          esac
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}

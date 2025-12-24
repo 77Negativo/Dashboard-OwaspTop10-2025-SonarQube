@@ -1,0 +1,591 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-12-03T14:29:46.883416",
+  "scan_date": "20251203_142946",
+  "data": {
+    "collection_date": "2025-12-03T14:29:46.015973",
+    "sonar_url": "http://192.168.8.221",
+    "total_projects": 3,
+    "total_repositories_expected": 209,
+    "main_branches_filter": [
+      "main",
+      "master",
+      "develop",
+      "developer"
+    ],
+    "secrets_pattern": "secrets",
+    "misconfig_patterns": [
+      "config",
+      "ssl",
+      "tls",
+      "certificate",
+      "encryption",
+      "cipher",
+      "security"
+    ],
+    "owasp_top_10_2025": {
+      "A01:2025-Broken Access Control": {
+        "description": "Controle de Acesso Quebrado",
+        "rules": [
+          "java:S2077",
+          "java:S3649",
+          "java:S5131",
+          "java:S5144",
+          "javascript:S5148",
+          "php:S3649",
+          "python:S5131",
+          "csharp:S2077",
+          "sql:S2077",
+          "java:S5808",
+          "java:S4601",
+          "php:S4834",
+          "csharp:S4834",
+          "xml:S5604"
+        ],
+        "keywords": [
+          "access",
+          "authorization",
+          "permission",
+          "privilege",
+          "authentication"
+        ],
+        "color": "#8B0000",
+        "priority": 1,
+        "icon": "fa-shield-alt",
+        "impact": "Acesso não autorizado a dados e funcionalidades"
+      },
+      "A02:2025-Security Misconfiguration": {
+        "description": "Configuração de Segurança Incorreta",
+        "rules": [
+          "java:S4434",
+          "java:S4502",
+          "java:S5527",
+          "javascript:S4426",
+          "python:S5445",
+          "csharp:S4426",
+          "docker:S6471php:S4502",
+          "java:S5122",
+          "csharp:S5122"
+        ],
+        "keywords": [
+          "config",
+          "ssl",
+          "tls",
+          "certificate",
+          "encryption",
+          "cipher"
+        ],
+        "color": "#DC3545",
+        "priority": 2,
+        "icon": "fa-cogs",
+        "impact": "Exposição de sistema por configuração inadequada",
+        "highlight": true
+      },
+      "A03:2025-Software Supply Chain Failures": {
+        "description": "Falhas na Cadeia de Suprimentos de Software",
+        "rules": [
+          "java:S4823",
+          "javascript:S4507",
+          "python:S4507",
+          "csharp:S4507",
+          "docker:S6476",
+          "java:S4507",
+          "php:S4823"
+        ],
+        "keywords": [
+          "dependency",
+          "package",
+          "library",
+          "component",
+          "supply",
+          "chain"
+        ],
+        "color": "#FF6B6B",
+        "priority": 3,
+        "icon": "fa-link",
+        "impact": "Compromisso através de dependências vulneráveis"
+      },
+      "A04:2025-Cryptographic Failures": {
+        "description": "Falhas Criptográficas",
+        "rules": [
+          "java:S4790",
+          "java:S5542",
+          "java:S5547",
+          "javascript:S4790",
+          "python:S4426",
+          "csharp:S4790",
+          "secrets:S6290",
+          "secrets:S6706java:S2278",
+          "csharp:S2278"
+        ],
+        "keywords": [
+          "crypto",
+          "hash",
+          "encrypt",
+          "decrypt",
+          "key",
+          "secret",
+          "password",
+          "token"
+        ],
+        "color": "#FF9800",
+        "priority": 4,
+        "icon": "fa-key",
+        "impact": "Exposição de dados sensíveis e credenciais",
+        "highlight": true
+      },
+      "A05:2025-Injection": {
+        "description": "Injeção",
+        "rules": [
+          "java:S2077",
+          "java:S3649",
+          "javascript:S3649",
+          "php:S3649",
+          "python:S3649",
+          "csharp:S3649",
+          "sql:S1192",
+          "java:S2091",
+          "csharp:S2091",
+          "php:S2091",
+          "javasecurity:S5147",
+          "jssecurity:S5147",
+          "pythonsecurity:S5147",
+          "csharp:S5147"
+        ],
+        "keywords": [
+          "injection",
+          "sql",
+          "nosql",
+          "ldap",
+          "xpath",
+          "command"
+        ],
+        "color": "#FFC107",
+        "priority": 5,
+        "icon": "fa-syringe",
+        "impact": "Execução de código malicioso no sistema"
+      },
+      "A06:2025-Insecure Design": {
+        "description": "Design Inseguro",
+        "rules": [
+          "java:S1313",
+          "java:S2245",
+          "javascript:S2245",
+          "python:S2245",
+          "csharp:S2245"
+        ],
+        "keywords": [
+          "design",
+          "pattern",
+          "architecture",
+          "threat",
+          "model"
+        ],
+        "color": "#9C27B0",
+        "priority": 6,
+        "icon": "fa-drafting-compass",
+        "impact": "Falhas arquiteturais fundamentais"
+      },
+      "A07:2025-Authentication Failures": {
+        "description": "Falhas de Autenticação",
+        "rules": [
+          "java:S2068",
+          "java:S6437",
+          "javascript:S2068",
+          "python:S2068",
+          "csharp:S2068",
+          "secrets:S6290",
+          "java:S5804",
+          "java:S5876"
+        ],
+        "keywords": [
+          "authentication",
+          "session",
+          "login",
+          "credential",
+          "password"
+        ],
+        "color": "#3F51B5",
+        "priority": 7,
+        "icon": "fa-user-shield",
+        "impact": "Bypass de autenticação e sessões comprometidas"
+      },
+      "A08:2025-Software and Data Integrity Failures": {
+        "description": "Falhas de Integridade de Software e Dados",
+        "rules": [
+          "java:S4829",
+          "javascript:S4829",
+          "python:S4829",
+          "csharp:S4829",
+          "docker:S6475",
+          "csharp:S5042",
+          "csharp:S5766"
+        ],
+        "keywords": [
+          "integrity",
+          "signature",
+          "verify",
+          "checksum",
+          "hash"
+        ],
+        "color": "#009688",
+        "priority": 8,
+        "icon": "fa-certificate",
+        "impact": "Dados e código comprometidos"
+      },
+      "A09:2025-Logging & Alerting Failures": {
+        "description": "Falhas de Logging e Alertas",
+        "rules": [
+          "java:S2139",
+          "java:S106",
+          "javascript:S106",
+          "python:S106",
+          "csharp:S106",
+          "java:S4792",
+          "csharp:S4792"
+        ],
+        "keywords": [
+          "log",
+          "logging",
+          "alert",
+          "monitor",
+          "audit",
+          "trace"
+        ],
+        "color": "#607D8B",
+        "priority": 9,
+        "icon": "fa-clipboard-list",
+        "impact": "Detecção tardia de incidentes de segurança"
+      },
+      "A10:2025-Mishandling of Exception Conditions": {
+        "description": "Manuseio Inadequado de Condições de Exceção",
+        "rules": [
+          "java:S1181",
+          "java:S2139",
+          "javascript:S1181",
+          "python:S1181",
+          "csharp:S1181"
+        ],
+        "keywords": [
+          "exception",
+          "error",
+          "handling",
+          "catch",
+          "throw"
+        ],
+        "color": "#795548",
+        "priority": 10,
+        "icon": "fa-exclamation-triangle",
+        "impact": "Vazamento de informações através de erros"
+      }
+    },
+    "projects_main_passed": 0,
+    "projects_main_failed": 0,
+    "projects_main_none": 3,
+    "projects_with_secrets": 0,
+    "projects_with_misconfigs": 0,
+    "projects_with_coverage": 0,
+    "owasp_metrics_global": {
+      "A03:2025-Software Supply Chain Failures": 1
+    },
+    "owasp_metrics_by_project": {
+      "Bucket-GCS-Scan-ia-n8n": {
+        "project_name": "Bucket-GCS-Scan-ia-n8n",
+        "metrics": {},
+        "governance_maturity": {
+          "score": 100,
+          "level": "OPTIMIZED",
+          "description": "Otimizado - Melhoria contínua",
+          "total_issues": 0,
+          "categories_affected": 0
+        }
+      },
+      "githooks": {
+        "project_name": "githooks",
+        "metrics": {},
+        "governance_maturity": {
+          "score": 100,
+          "level": "OPTIMIZED",
+          "description": "Otimizado - Melhoria contínua",
+          "total_issues": 0,
+          "categories_affected": 0
+        }
+      },
+      "secure-login-app": {
+        "project_name": "secure-login-app",
+        "metrics": {
+          "A03:2025-Software Supply Chain Failures": 1
+        },
+        "governance_maturity": {
+          "score": 96.6,
+          "level": "OPTIMIZED",
+          "description": "Otimizado - Melhoria contínua",
+          "total_issues": 1,
+          "categories_affected": 1
+        }
+      }
+    },
+    "governance_metrics": {
+      "score": 96.6,
+      "level": "OPTIMIZED",
+      "description": "Otimizado - Melhoria contínua",
+      "total_issues": 1,
+      "categories_affected": 1
+    },
+    "issues_details": [
+      {
+        "key": "1e7e68cb-55a4-48f5-a176-360f3977ad9c",
+        "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
+        "component": "src/middleware/ensureAuth.js",
+        "line": 2,
+        "severity": "MAJOR",
+        "risk_level": "HIGH",
+        "type": "CODE_SMELL",
+        "rule": "javascript:S6582",
+        "creationDate": "2025-09-25T18:37:45+0000",
+        "projectName": "secure-login-app",
+        "projectKey": "secure-login-app",
+        "branchName": "feature/developer",
+        "owasp_category": "A03:2025-Software Supply Chain Failures"
+      }
+    ],
+    "projects_risk_matrix": [],
+    "projects": [
+      {
+        "key": "Bucket-GCS-Scan-ia-n8n",
+        "name": "Bucket-GCS-Scan-ia-n8n",
+        "branches": [
+          {
+            "name": "main",
+            "is_main": true,
+            "qg_status": "NONE",
+            "current_metrics": {},
+            "issues_by_type": {},
+            "issues_by_severity": {},
+            "rules_count": {},
+            "blocker_issues": [],
+            "secrets_issues": [],
+            "misconfig_issues": [],
+            "owasp_metrics": {},
+            "total_issues": 0
+          }
+        ],
+        "main_qg_status": "NONE",
+        "has_secrets": false,
+        "has_misconfigs": false,
+        "secrets_count": 0,
+        "misconfigs_count": 0,
+        "owasp_metrics": {},
+        "governance_maturity": {
+          "score": 100,
+          "level": "OPTIMIZED",
+          "description": "Otimizado - Melhoria contínua",
+          "total_issues": 0,
+          "categories_affected": 0
+        },
+        "coverage_branches": [],
+        "average_coverage": 0
+      },
+      {
+        "key": "githooks",
+        "name": "githooks",
+        "branches": [
+          {
+            "name": "main",
+            "is_main": true,
+            "qg_status": "NONE",
+            "current_metrics": {},
+            "issues_by_type": {},
+            "issues_by_severity": {},
+            "rules_count": {},
+            "blocker_issues": [],
+            "secrets_issues": [],
+            "misconfig_issues": [],
+            "owasp_metrics": {},
+            "total_issues": 0
+          }
+        ],
+        "main_qg_status": "NONE",
+        "has_secrets": false,
+        "has_misconfigs": false,
+        "secrets_count": 0,
+        "misconfigs_count": 0,
+        "owasp_metrics": {},
+        "governance_maturity": {
+          "score": 100,
+          "level": "OPTIMIZED",
+          "description": "Otimizado - Melhoria contínua",
+          "total_issues": 0,
+          "categories_affected": 0
+        },
+        "coverage_branches": [],
+        "average_coverage": 0
+      },
+      {
+        "key": "secure-login-app",
+        "name": "secure-login-app",
+        "branches": [
+          {
+            "name": "feature/developer",
+            "is_main": false,
+            "qg_status": "NONE",
+            "current_metrics": {
+              "coverage": 0.0,
+              "minor_violations": 0.0,
+              "reliability_rating": "1.0",
+              "duplicated_lines_density": 8.2,
+              "code_smells": 1.0,
+              "security_rating": "1.0",
+              "security_hotspots": 2.0,
+              "sqale_index": 5.0,
+              "critical_violations": 0.0,
+              "sqale_rating": "1.0",
+              "blocker_violations": 0.0,
+              "bugs": 0.0,
+              "info_violations": 0.0,
+              "major_violations": 1.0,
+              "ncloc": 259.0,
+              "vulnerabilities": 0.0
+            },
+            "issues_by_type": {
+              "CODE_SMELL": 1
+            },
+            "issues_by_severity": {
+              "MAJOR": 1
+            },
+            "rules_count": {
+              "javascript:S6582": 1
+            },
+            "blocker_issues": [],
+            "secrets_issues": [],
+            "misconfig_issues": [],
+            "owasp_metrics": {
+              "A03:2025-Software Supply Chain Failures": 1
+            },
+            "total_issues": 1
+          },
+          {
+            "name": "main",
+            "is_main": true,
+            "qg_status": "NONE",
+            "current_metrics": {},
+            "issues_by_type": {},
+            "issues_by_severity": {},
+            "rules_count": {},
+            "blocker_issues": [],
+            "secrets_issues": [],
+            "misconfig_issues": [],
+            "owasp_metrics": {},
+            "total_issues": 0
+          }
+        ],
+        "main_qg_status": "NONE",
+        "has_secrets": false,
+        "has_misconfigs": false,
+        "secrets_count": 0,
+        "misconfigs_count": 0,
+        "owasp_metrics": {
+          "A03:2025-Software Supply Chain Failures": 1
+        },
+        "governance_maturity": {
+          "score": 96.6,
+          "level": "OPTIMIZED",
+          "description": "Otimizado - Melhoria contínua",
+          "total_issues": 1,
+          "categories_affected": 1
+        },
+        "coverage_branches": [],
+        "average_coverage": 0
+      }
+    ],
+    "insights": {
+      "critical_alerts": [
+        {
+          "level": "MEDIUM",
+          "title": "📊 3 Projetos sem Coverage de Testes",
+          "description": "Projetos sem métricas de cobertura de testes configuradas.",
+          "action": "Implementar testes e configurar coverage",
+          "impact": "Qualidade e confiabilidade questionáveis"
+        }
+      ],
+      "opportunities": [
+        {
+          "title": "🎯 Focar nas Top 3 Categorias OWASP",
+          "description": "Concentrar esforços em: A3Software Supply Chain Failures",
+          "benefit": "Redução de 60-80% dos riscos de segurança",
+          "effort": "Médio"
+        },
+        {
+          "title": "🧪 Oportunidade de Melhoria em Testes",
+          "description": "Apenas 0/3 projetos têm coverage configurado.",
+          "benefit": "Aumento da qualidade e confiabilidade do código",
+          "effort": "Médio"
+        }
+      ],
+      "recommendations": [
+        {
+          "priority": 1,
+          "title": "🔐 Implementar Secret Scanning Automático",
+          "description": "Scanner automático no CI/CD para detectar credentials",
+          "timeline": "2-4 semanas",
+          "roi": "Alto - Prevenção de vazamentos"
+        },
+        {
+          "priority": 2,
+          "title": "⚙️ Auditoria de Configurações de Segurança",
+          "description": "Revisar e padronizar configurações de SSL/TLS e certificados",
+          "timeline": "3-5 semanas",
+          "roi": "Alto - Redução de exposição"
+        },
+        {
+          "priority": 3,
+          "title": "📊 Quality Gates Obrigatórios",
+          "description": "Tornar QG mandatório para deploy em produção",
+          "timeline": "1-2 semanas",
+          "roi": "Médio - Melhoria da qualidade"
+        },
+        {
+          "priority": 4,
+          "title": "🧪 Implementar Coverage Mínimo",
+          "description": "Configurar coverage mínimo de 80% para todos os projetos",
+          "timeline": "4-6 semanas",
+          "roi": "Alto - Melhoria da qualidade"
+        },
+        {
+          "priority": 5,
+          "title": "🎓 Treinamento OWASP Top 10 2025",
+          "description": "Capacitar equipes nas novas categorias de risco",
+          "timeline": "4-6 semanas",
+          "roi": "Alto - Prevenção proativa"
+        }
+      ],
+      "trends": [],
+      "benchmarks": {
+        "governance_score": {
+          "current": 96.6,
+          "industry_avg": 65,
+          "best_practice": 85,
+          "status": "above"
+        },
+        "secrets_ratio": {
+          "current": 0.0,
+          "industry_avg": 15,
+          "best_practice": 5,
+          "status": "below"
+        },
+        "qg_pass_rate": {
+          "current": 0.0,
+          "industry_avg": 75,
+          "best_practice": 95,
+          "status": "below"
+        },
+        "coverage_ratio": {
+          "current": 0.0,
+          "industry_avg": 70,
+          "best_practice": 90,
+          "status": "below"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,110 @@
+name: 📊 SonarQube Code Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - staging
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+    inputs:
+      fail-on-quality-gate:
+        description: 'Falhar se Quality Gate não passar'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  sonarqube-analysis:
+    name: 📊 Análise de Código Python
+    runs-on: k8s-onprem-runners  # ⚠️ PADRÃO OBRIGATÓRIO - NUNCA ALTERAR
+
+    outputs:
+      quality-gate-status: ${{ steps.sonarqube.outputs.quality-gate-status }}
+      project-url: ${{ steps.sonarqube.outputs.project-url }}
+      environment-name: ${{ steps.sonarqube.outputs.environment-name }}
+
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SONAR_PROJECT_KEY: 'dashboard-owasp-top10-2025'
+      SONAR_PROJECT_NAME: 'Dashboard OWASP Top 10 2025 - SonarQube'
+      SONAR_SOURCES: '.'
+      SONAR_EXCLUSIONS: '**/__pycache__/**,**/*.pyc,**/.pytest_cache/**,**/venv/**,**/env/**,**/.git/**,**/.github/**,**/sonarqube_scans_history/**,**/sonarqube_dashboard.html'
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Histórico completo para melhor análise
+
+      - name: 🔍 Validar Pré-requisitos
+        run: |
+          echo "### 🔍 Validação de Pré-requisitos" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Verificar variáveis obrigatórias
+          echo "**Secrets e Variables**:" >> $GITHUB_STEP_SUMMARY
+
+          if [ -n "$SONAR_TOKEN" ]; then
+            echo "- ✅ SONAR_TOKEN configurado" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ SONAR_TOKEN NÃO configurado" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ -n "$SONAR_HOST_URL" ]; then
+            echo "- ✅ SONAR_HOST_URL: $SONAR_HOST_URL" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ SONAR_HOST_URL NÃO configurado" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Conectividade**:" >> $GITHUB_STEP_SUMMARY
+
+          # Testar conectividade com SonarQube
+          if curl -s -o /dev/null -w "%{http_code}" "$SONAR_HOST_URL" | grep -q "200\|401\|403"; then
+            echo "- ✅ SonarQube acessível em $SONAR_HOST_URL" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ Não foi possível conectar ao SonarQube" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Runner Info**:" >> $GITHUB_STEP_SUMMARY
+          echo "- Runner: k8s-onprem-runners" >> $GITHUB_STEP_SUMMARY
+          echo "- Hostname: $(hostname)" >> $GITHUB_STEP_SUMMARY
+          echo "- Java: $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+      - name: 📊 Executar SonarQube Scanner
+        id: sonarqube
+        uses: 77Negativo/core-action-sec/.github/actions/sonarqube@main
+        with:
+          quality-gate-wait: 'true'
+          fail-on-quality-gate: ${{ github.event.inputs.fail-on-quality-gate || 'false' }}
+          skip-java-setup: 'true'
+          upload-dependency-reports: 'false'
+
+      - name: 📋 Resumo da Análise
+        if: always()
+        run: |
+          echo "### 📊 Resultado da Análise SonarQube" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: ${{ steps.sonarqube.outputs.environment-name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Quality Gate**: ${{ steps.sonarqube.outputs.quality-gate-status }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Dashboard**: ${{ steps.sonarqube.outputs.project-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.sonarqube.outputs.quality-gate-status }}" == "OK" ]; then
+            echo "✅ **Status**: Análise concluída com sucesso!" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.sonarqube.outputs.quality-gate-status }}" == "ERROR" ]; then
+            echo "❌ **Status**: Quality Gate falhou!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Status**: ${{ steps.sonarqube.outputs.quality-gate-status }}" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,0 +1,389 @@
+crie nova aba:
+
+Garanta que todos os graficos, tabelas de governaça, companhamento e evolução temporal serao criadas e preenchidas.
+
+ASVS 4.0 Strategic.
+Modelo de dados + layout de dashboard + OKRs + frases de insight
+
+
+1. Modelo de Dados – “ASVS 4.0 360°”
+1.1. Fato principal: fact_asvs_verification
+
+Descrição:
+Cada linha representa a avaliação de um requisito ASVS específico para um sistema.
+
+Campos (colunas) – fato
+
+verification_id
+project_id
+project_name
+business_criticality (Alta / Média / Baixa)
+business_unit (ex.: Comercial, Financeiro, Produto, Core etc.)
+asvs_section (V1…V14 – ex.: V2 Authentication, V4 Access Control)
+asvs_requirement_id (ex.: V2.1.1, V4.1.3)
+asvs_requirement_title (título curto do requisito)
+required_level (1, 2 ou 3 – nível mínimo exigido para aquele sistema)
+implemented_status (Sim / Parcial / Não / N/A)
+
+implemented_score
+
+0 = Não
+0,5 = Parcial
+1 = Sim
+
+gap_severity (Crítico / Alto / Médio / Baixo – se houver gap)
+verification_status (OK / Gap / Aceito / Em Planejamento)
+verification_type (Design review, Code review, Teste manual, Ferramenta, Pentest)
+
+verification_date
+owner_team (squad responsável)
+system_type (Web, Mobile, API, Serviço interno, Batch…)
+internet_facing (Sim / Não)
+data_sensitivity (Alto / Médio / Baixo – sensibilidade dos dados)
+has_security_incident_related (Sim / Não – se já teve incidente ligado a falha nesse domínio)
+evidence_link (link para artefato: test case, print, relatório etc.)
+Derivações importantes
+
+Score por requisito:
+
+implemented_score
+Score por seção (Vx):
+média do implemented_score dos requisitos daquela seção (V2, V4 etc.).
+
+Score global por sistema:
+
+média ponderada dos implemented_score (pode ponderar por criticidade do sistema ou nível requerido).
+
+1.2. Dimensões
+dim_project
+
+project_id
+project_name
+business_criticality (Alta/Média/Baixa)
+business_unit
+system_type (Web, Mobile, API…)
+internet_facing (Sim/Não)
+data_sensitivity (Alto/Médio/Baixo)
+business_owner
+technical_owner
+dim_asvs_requirement
+asvs_requirement_id (ex.: V2.1.1)
+asvs_section (V1–V14)
+asvs_requirement_title
+asvs_requirement_description_short
+level_1_required (Sim/Não)
+level_2_required (Sim/Não)
+level_3_required (Sim/Não)
+dim_time
+date
+month
+quarter
+year
+dim_business_unit
+business_unit_id
+business_unit_name
+dim_team
+team_id
+team_name
+manager_name
+dim_system_type
+system_type_id
+system_type_name (Web, Mobile, API, Serviço interno, Batch etc.)
+(Opcional, muito poderoso) dim_mapping
+asvs_requirement_id
+owasp_top10 (ex.: A01, A02…)
+cwe_family (lista ou categoria de CWEs associados)
+Com isso você olha ASVS por sistema, seção, nível, time, BU e ao longo do tempo, e ainda conecta com OWASP/CWE depois.
+
+2. Layout – “ASVS 4.0 Strategic Command Center”
+
+Um único dashboard com 4 grandes blocos:
+
+Visão Executiva ASVS (topo)
+
+Risco & Negócio (ASVS x Sistemas Críticos)
+
+Governança & Efetividade (gaps, MTTR, cobertura)
+
+DevSecOps, IAM, Supply Chain & Cultura (onde o ASVS “aperta”)
+
+2.1. Bloco 1 – Visão Executiva ASVS
+
+Objetivo: mostrar, rapidamente, a maturidade ASVS por criticidade e nível.
+
+Cards de KPI
+
+Score Médio ASVS – Sistemas Críticos
+
+Métrica: média de implemented_score de todos os requisitos exigidos (por required_level) nos projetos com business_criticality = Alta.
+
+Exibição:
+
+“Conformidade média ASVS (críticos): 68%”.
+
+Aplicações Críticas com Nível ASVS Atendido
+
+Métrica:
+
+% de sistemas críticos onde todos os requisitos do nível exigido (1/2/3) têm implemented_status = Sim ou Parcial aceitável.
+
+Exemplo de texto:
+
+“45% dos sistemas críticos atingem o nível ASVS requerido”.
+
+Seções com Maior Gap
+
+Métrica:
+
+nº de requisitos com implemented_status = Não ou Parcial, agrupados por asvs_section.
+
+Exibição: ranking: V2, V4, V9…
+
+Cobertura de Verificação ASVS
+
+Métrica:
+
+nº de requisitos avaliados / nº total de requisitos exigidos.
+
+Exemplo:
+
+“78% dos requisitos ASVS exigidos já foram avaliados ao menos 1 vez nos últimos 12 meses”.
+
+Aplicações Sem Avaliação ASVS Recente
+
+Métrica:
+
+nº de sistemas sem verificação nos últimos X meses (ex.: 12).
+
+Uso: sinalizar falha de governança.
+
+Gráfico 1 – “Conformidade ASVS por Nível (L1/L2/L3)”
+
+Tipo: barras.
+
+Eixo X: Nível 1, 2, 3.
+
+Eixo Y: % de conformidade média (score médio).
+
+Filtro padrão: sistemas críticos (com opção de trocar para “todos os sistemas”).
+
+2.2. Bloco 2 – Risco & Negócio (ASVS x Sistemas Críticos)
+Gráfico 2 – Heatmap “Sistemas Críticos x Seções ASVS”
+
+Linhas: project_name com business_criticality = Alta.
+
+Colunas: asvs_section (V1 a V14).
+
+Célula: score médio da seção ou % de requisitos implementados.
+
+Cores:
+
+Verde: ≥ 80%
+
+Amarelo: 50–79%
+
+Vermelho: < 50%
+
+Mostra claramente qual sistema crítico está fraco em qual domínio (Auth, Access, Data Protection, Logging, etc.).
+
+Gráfico 3 – “Top 10 Seções ASVS com Mais Gaps em Sistemas Críticos”
+
+Tipo: barras.
+
+Eixo X: asvs_section (V2, V4, V7, V9…).
+
+Eixo Y: nº de requisitos com implemented_status = Não/Parcial em sistemas de criticidade Alta.
+
+Gráfico 4 – “Aplicações Críticas por Faixa de Score ASVS”
+
+Tipo: barras de distribuição (faixas de score).
+
+Eixo X: faixas de score (0–40, 41–60, 61–80, 81–100).
+
+Eixo Y: nº de sistemas críticos por faixa.
+
+Dá uma visão de “maturidade de portfólio”.
+
+KPI de risco de negócio
+
+“Dependência do Negócio de Aplicações com Baixa Conformidade ASVS”
+
+Se houver peso de receita/usuário por sistema:
+
+% da receita/processos críticos apoiados em sistemas com score ASVS < 60%.
+
+2.3. Bloco 3 – Governança & Efetividade (Gaps, MTTR, Cobertura)
+Gráfico 5 – “Backlog de Gaps ASVS por Seção e Severidade”
+
+Tipo: barras empilhadas.
+
+Eixo X: asvs_section.
+
+Eixo Y: nº de gaps (requisitos com implemented_status = Não/Parcial).
+
+Stack: gap_severity (Crítico, Alto, Médio, Baixo).
+
+Gráfico 6 – “MTTR de Gaps ASVS Críticos por Seção”
+
+Tipo: barras horizontais.
+
+Eixo X: MTTR em dias (média de verification_date → data de fechamento).
+
+Eixo Y: asvs_section.
+
+Filtro: gap_severity in (Crítico, Alto).
+
+Mostra em qual domínio do ASVS você até detecta, mas demora pra arrumar.
+
+Tabela – “Top 10 Gaps ASVS em Sistemas Críticos”
+
+Colunas sugeridas:
+
+Sistema crítico (project_name)
+
+asvs_requirement_id
+
+Título do requisito (asvs_requirement_title)
+
+Seção (V2, V4…)
+
+Nível (L1/L2/L3)
+
+Severidade do gap (gap_severity)
+
+Data de identificação (verification_date)
+
+Dono / Squad (owner_team)
+
+Prazo proposto / SLA
+
+Gráfico 7 – “Evolução da Conformidade ASVS por Trimestre”
+
+Tipo: linha.
+
+Eixo X: trimestres.
+
+Eixo Y: score médio ASVS (global ou só sistemas críticos).
+
+Mostra se a governança está empurrando melhoria contínua ou só apagando incêndio.
+
+2.4. Bloco 4 – DevSecOps, IAM, Supply Chain & Cultura
+
+Aqui você traduz ASVS em causa raiz e ação prática.
+
+4.1. DevSecOps
+
+Mapear seções ASVS para práticas do pipeline, por exemplo:
+
+V8 – Data Protection
+
+V9 – Communication Security
+
+V10 – Malicious Code & Config
+
+V11 – Business Logic
+
+V14 – Configuration
+
+Gráfico 8 – “Conformidade ASVS x Adoção de Pipeline de Segurança”
+
+Tipo: scatter plot.
+
+Eixo X: % de steps de segurança habilitados (SAST, SCA, secret scanning, DAST etc.).
+
+Eixo Y: score médio ASVS do projeto.
+
+Mostra correlação entre automação de segurança e conformidade ASVS.
+
+Gráfico 9 – “Requisitos ASVS com Cobertura Automatizada vs Manual”
+
+Tipo: barras empilhadas.
+Eixo X: asvs_section.
+Eixo Y: nº de requisitos.
+
+Stack: verificado via Ferramenta vs Manual.
+
+Ajuda a argumentar que precisa de mais automação.
+
+4.2. IAM (Autenticação & Autorização – V2 e V4)
+
+KPIs específicos:
+
+Score médio de V2 (Authentication) para sistemas críticos.
+Score médio de V4 (Access Control) para sistemas críticos.
+Nº de requisitos críticos de V2/V4 com status Não/Parcial.
+
+Gráfico 10 – “Mapa de Lacunas em Autenticação/Autorização”
+
+Tipo: heatmap.
+
+Linhas: sistemas críticos.
+
+Colunas: V2 e V4 (ou subgrupos mais granulares).
+
+Célula: score médio.
+
+Perfeito pra ligar com riscos de identidade, SSO, MFA, RBAC etc.
+
+4.3. Supply Chain (V13/V14 e seções relacionadas)
+
+Focar nas seções ASVS que tratam de:
+
+uso de componentes confiáveis, configuração segura, atualização de dependências.
+
+Gráfico 11 – “Conformidade ASVS de Supply Chain (V13/V14) x Criticidade”
+
+Eixo X: nível de criticidade (Alta/Média/Baixa).
+Eixo Y: score médio dos requisitos V13/V14.
+
+Mostra se os sistemas críticos estão realmente protegidos em termos de supply chain/configuração.
+
+4.4. Cultura & Pessoas
+
+Usar seções como V1 (Architecture, design & threat modeling) e controles de processo.
+
+Gráfico 12 – “Adoção de Threat Modeling vs Score ASVS”
+
+Eixo X: sistemas com/sem threat modeling formal.
+Eixo Y: score médio global ASVS.
+
+Normalmente, sistemas com threat modeling têm score maior – argumento forte pra diretoria.
+
+3. OKRs e Frases de Insight – 100% ASVS 4.0
+
+3.1. OKRs Estratégicos de ASVS
+
+Objetivo 1 – Elevar a conformidade ASVS dos sistemas críticos ao nível requerido
+
+KR1: Aumentar a conformidade média ASVS dos sistemas críticos de 62% para 80% até o fim do ano.
+KR2: Garantir que 100% dos sistemas críticos atinjam o nível ASVS exigido (1/2/3) até o Q4.
+KR3: Reduzir em 70% o nº de gaps críticos (requisitos ASVS com severidade Crítica/Alta) nos sistemas de criticidade Alta até o Q3.
+
+Objetivo 2 – Fortalecer Autenticação e Autorização (V2 e V4)
+
+KR1: Aumentar o score médio de V2 (Authentication) em sistemas críticos de 55% para 85%.
+KR2: Aumentar o score médio de V4 (Access Control) em sistemas críticos de 50% para 80%.
+KR3: Eliminar todos os gaps críticos de V2/V4 em sistemas expostos à internet até o Q3.
+
+Objetivo 3 – Integrar ASVS ao DevSecOps e Supply Chain
+
+KR1: Garantir que 100% dos requisitos ASVS passíveis de automação (SAST/SCA/Config) possuam uma verificação automatizada associada até o Q2.
+KR2: Reduzir em 50% o nº de gaps de V13/V14 (configuração e componentes) em sistemas críticos até o Q3.
+KR3: Atingir ≥ 90% de cobertura de verificação periódica (ao menos 1 avaliação ASVS por ano) em todos os sistemas críticos.
+
+3.2. Frases de Insight para Relatório (ASVS 4.0)
+
+Pode usar praticamente “copiar e colar” no relatório gerencial:
+
+“Atualmente, apenas 42% dos sistemas críticos atingem o nível ASVS requerido, concentrando riscos em Autenticação (V2) e Controle de Acesso (V4).”
+“Os maiores gaps de conformidade estão em V2 (Authentication), V4 (Access Control) e V9 (Communication Security), exatamente nos domínios que lidam com identidade e exposição externa.”
+“Sistemas com pipeline de segurança completo (SAST + SCA + secret scanning) apresentam em média 20 pontos percentuais a mais de conformidade ASVS do que sistemas sem automação.”
+“Mais de 60% dos gaps críticos ASVS estão concentrados em 5 sistemas de alta criticidade, o que define uma lista clara de prioridades para o próximo trimestre.”
+“Sistemas que passaram por threat modeling formal possuem score ASVS médio de 82%, contra 57% dos que não possuem, evidenciando o impacto direto na redução de riscos estruturais.”
+
+Manter a estrutura do script não mexer nas outras abas.   
+Faça exatamente o esta sendo pedido.   
+Não faça alteração que não foi pedida.  
+
+Adote uma metodologia diferente copiar o arquivo original Dashboard-OwaspTop10-2025.py para Dashboard-ASVS-OwaspTop10-2025.pye fazer as modificações necessárias de forma mais direcionada.
+Entregue o documente atualizado e funcional.
