@@ -1,4 +1,4 @@
-name: 📊 SonarQube Code Analysis
+name: Security Scanner
 
 on:
   push:
