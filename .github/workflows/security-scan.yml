@@ -1,17 +1,25 @@
 name: Security Scanner
+
 on:
   push:
     branches:
       - main
-      - develop 
+      - develop
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   security-scan:
     uses: 77Negativo/core-action-sec/.github/workflows/simples-scan.yml@main
+    with:
+      nvd-cache-repo: 77Negativo/core-action-sec
+      nvd-cache-tag: nvd-cache-latest
+      require-nvd-cache: true
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      NVD_CACHE_TOKEN: ${{ secrets.NVD_CACHE_TOKEN }}
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
